@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Skill: DevSecOps Code Reviewer | Unilasallista</title>
+    <meta name="description" content="Skill de IA para Gemini enfocada en auditoría de código DevSecOps, detección de vulnerabilidades OWASP Top 10, cumplimiento de principios SOLID y generación de pruebas unitarias.">
+    
+    <!-- Favicon Links for Browser Tab -->
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        darkCard: '#111827',
+                        brandBlue: '#38bdf8',
+                        brandEmerald: '#34d399',
+                        brandPurple: '#c084fc',
+                        brandRose: '#fb7185'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Marked.js & Highlight.js CDN for Markdown Viewer -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+</head>
+<body class="bg-darkBg text-gray-100 min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- Ambient Background Lighting -->
+    <div class="fixed top-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+    <div class="fixed bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none animate-pulse-glow"></div>
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-darkBg/80 border-b border-gray-800/60">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <img src="favicon.jpg" alt="DevSecOps Logo" class="w-10 h-10 rounded-xl object-cover border border-sky-500/40 shadow-lg shadow-sky-500/20">
+                <div>
+                    <span class="font-bold text-lg tracking-wide text-white block">DevSecOps Reviewer</span>
+                    <span class="text-xs text-sky-400 font-medium">David Herrera Carvajal • Unilasallista</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-300">
+                <a href="#pilares" class="hover:text-sky-400 transition-colors">Pilares</a>
+                <a href="#entregables" class="hover:text-sky-400 transition-colors">Entregables (Rúbrica)</a>
+                <a href="#demo" class="hover:text-sky-400 transition-colors">Simulación Skill</a>
+                <a href="#cuaderno" class="hover:text-sky-400 transition-colors">Cuaderno de Datos</a>
+            </nav>
+
+            <div class="flex items-center space-x-4">
+                <button onclick="openSkillModal()" class="glass-card px-4 py-2 rounded-lg text-xs font-semibold text-sky-300 border border-sky-500/30 hover:bg-sky-500/10 transition-all flex items-center space-x-2 cursor-pointer">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    <span>Ver SKILL.md</span>
+                </button>
+                <a href="https://github.com/DavidHC9/Seguimiento-2-de-ML" target="_blank" class="bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-sky-500/20 transition-all flex items-center space-x-2">
+                    <i class="fa-brands fa-github text-sm"></i>
+                    <span>GitHub Repo</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-grow">
+
+        <!-- Hero Section -->
+        <section class="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-sky-950/60 border border-sky-500/30 text-sky-400 text-xs font-semibold mb-6 shadow-inner">
+                    <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
+                    <span>Autor: <strong>David Herrera Carvajal</strong> • Corporación Universitaria Unilasallista</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight mb-6">
+                    Gemini Skill: <br class="hidden sm:inline" />
+                    <span class="gradient-text-cyan">DevSecOps Code Reviewer</span>
+                </h1>
+                
+                <p class="max-w-3xl mx-auto text-lg sm:text-xl text-gray-400 font-normal leading-relaxed mb-10">
+                    Sistema experto de auditoría estática impulsado por la IA de Gemini. Detecta vulnerabilidades <span class="text-rose-400 font-semibold">OWASP Top 10</span>, refactoriza aplicando principios <span class="text-sky-400 font-semibold">SOLID</span> y genera <span class="text-emerald-400 font-semibold">Pruebas Unitarias</span> automatizadas.
+                </p>
+
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <button onclick="openSkillModal()" class="glow-effect px-6 py-3.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-sm shadow-xl transition-all flex items-center space-x-2 cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Ver Código de la Skill (SKILL.md)</span>
+                    </button>
+                    <a href="../docs/infografia_agent_skills_gemini.pdf" target="_blank" class="glass-card px-6 py-3.5 rounded-xl text-white font-semibold text-sm hover:border-sky-400 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-file-pdf text-rose-400"></i>
+                        <span>Infografía PDF</span>
+                    </a>
+                    <a href="../docs/Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb" class="glass-card px-6 py-3.5 rounded-xl text-white font-semibold text-sm hover:border-emerald-400 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-book-bookmark text-emerald-400"></i>
+                        <span>Cuaderno de Datos Jupyter</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3 Pilares de la Skill -->
+        <section id="pilares" class="py-16 bg-gray-950/40 border-y border-gray-800/40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <h2 class="text-xs font-bold text-sky-400 uppercase tracking-widest mb-2">Capacidades del Sistema</h2>
+                    <h3 class="text-3xl font-extrabold text-white">Los 3 Pilares Fundamentales de la Skill</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Pilar 1 -->
+                    <div class="glass-card p-8 rounded-2xl relative overflow-hidden group">
+                        <div class="w-14 h-14 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-shield-virus"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-3">1. Auditoría OWASP Top 10</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                            Detección estática precisa de fallas críticas: SQL Injection, secrets expuestos, deserialización insegura y autenticación rota.
+                        </p>
+                        <span class="inline-flex items-center text-xs font-semibold text-rose-400">
+                            <span>SAST & AppSec Ready</span>
+                            <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </span>
+                    </div>
+
+                    <!-- Pilar 2 -->
+                    <div class="glass-card p-8 rounded-2xl relative overflow-hidden group">
+                        <div class="w-14 h-14 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-cubes"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-3">2. Refactorización SOLID</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                            Reestructuración automatizada respetando SRP, OCP, LSP, ISP y DIP para garantizar código mantenible, desacoplado y limpio.
+                        </p>
+                        <span class="inline-flex items-center text-xs font-semibold text-sky-400">
+                            <span>Clean Code Architecture</span>
+                            <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </span>
+                    </div>
+
+                    <!-- Pilar 3 -->
+                    <div class="glass-card p-8 rounded-2xl relative overflow-hidden group">
+                        <div class="w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-vial-circle-check"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-3">3. Pruebas Automatizadas</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                            Generación instantánea de suites de pruebas unitarias (PyTest, Jest, JUnit) cubriendo Happy Paths, Edge Cases y vectores de ataque.
+                        </p>
+                        <span class="inline-flex items-center text-xs font-semibold text-emerald-400">
+                            <span>Automated Testing Suite</span>
+                            <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cuadrícula de los 7 Entregables (Rúbrica de Moodle) -->
+        <section id="entregables" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto mb-16">
+                    <span class="px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 text-xs font-semibold">Rúbrica Oficial de Evaluación</span>
+                    <h2 class="text-3xl font-extrabold text-white mt-4">Cuadrícula de los 7 Entregables del Proyecto</h2>
+                    <p class="text-gray-400 text-sm mt-2">Cumplimiento al 100% de los requisitos estipulados para la evaluación de seguimiento.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <!-- Entregable 1: Infografía -->
+                    <a href="../docs/infografia_agent_skills_gemini.pdf" target="_blank" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-rose-500/40">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm font-bold">01</span>
+                                <i class="fa-solid fa-file-pdf text-2xl text-rose-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Infografía PDF</h3>
+                            <p class="text-xs text-gray-400">Resumen visual de arquitectura DevSecOps y OWASP Top 10.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-rose-400 flex items-center justify-between">
+                            <span>Abrir PDF</span>
+                            <i class="fa-solid fa-up-right-from-square"></i>
+                        </div>
+                    </a>
+
+                    <!-- Entregable 2: Video Flow -->
+                    <a href="../docs/Untitled_Scene_10-09_23_12_06_20261009181416.mp4" target="_blank" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-purple-500/40">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm font-bold">02</span>
+                                <i class="fa-solid fa-video text-2xl text-purple-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Video Flow</h3>
+                            <p class="text-xs text-gray-400">Demostración en video del flujo completo de interacción con Gemini.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-purple-400 flex items-center justify-between">
+                            <span>Ver Video Demo</span>
+                            <i class="fa-solid fa-play"></i>
+                        </div>
+                    </a>
+
+                    <!-- Entregable 3: Landing Page -->
+                    <a href="./index.html" class="glass-card p-6 rounded-2xl flex flex-col justify-between border-sky-500/40 bg-sky-950/20">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm font-bold">03</span>
+                                <i class="fa-solid fa-globe text-2xl text-sky-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Landing Page</h3>
+                            <p class="text-xs text-gray-400">Portal web interactivo responsive diseñado con Tailwind CSS.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-sky-400 flex items-center justify-between">
+                            <span>Vista Actual</span>
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </a>
+
+                    <!-- Entregable 4: Repositorio GitHub -->
+                    <a href="https://github.com/DavidHC9/Seguimiento-2-de-ML" target="_blank" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-indigo-500/40">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">04</span>
+                                <i class="fa-brands fa-github text-2xl text-indigo-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Repositorio GitHub</h3>
+                            <p class="text-xs text-gray-400">Código fuente completo versionado y listo para desplegar.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-indigo-400 flex items-center justify-between">
+                            <span>Ir al Repo</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </div>
+                    </a>
+
+                    <!-- Entregable 5: Gemini Skill -->
+                    <button onclick="openSkillModal()" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-amber-500/40 text-left cursor-pointer">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm font-bold">05</span>
+                                <i class="fa-solid fa-wand-magic-sparkles text-2xl text-amber-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Skill Gemini</h3>
+                            <p class="text-xs text-gray-400">Archivo prompt maestro `SKILL.md` con reglas del sistema.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-amber-400 flex items-center justify-between">
+                            <span>Ver SKILL.md (Formateado)</span>
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                    </button>
+
+                    <!-- Entregable 6: Documentación README -->
+                    <button onclick="openReadmeModal()" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-blue-500/40 text-left cursor-pointer">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold">06</span>
+                                <i class="fa-solid fa-book text-2xl text-blue-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Documentación</h3>
+                            <p class="text-xs text-gray-400">Manual detallado, guía de uso y justificación académica.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-blue-400 flex items-center justify-between">
+                            <span>Leer README (Formateado)</span>
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                    </button>
+
+                    <!-- Entregable 7: Cuaderno de Datos -->
+                    <a href="../docs/Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb" class="glass-card p-6 rounded-2xl flex flex-col justify-between hover:border-emerald-500/40 sm:col-span-2 lg:col-span-2">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">07</span>
+                                <i class="fa-solid fa-chart-line text-2xl text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-white mb-1">Cuaderno de Datos (Jupyter Notebook)</h3>
+                            <p class="text-xs text-gray-400">Análisis reproducible en Python con pandas, matplotlib y seaborn midiendo el rendimiento de la Skill en 5 ejecuciones multilenguaje.</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-gray-800 text-xs font-semibold text-emerald-400 flex items-center justify-between">
+                            <span>Explorar Notebook (.ipynb)</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Simulación Interactiva de Auditoría de Código -->
+        <section id="demo" class="py-16 bg-gray-950/60 border-y border-gray-800/40">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-extrabold text-white">Simulación de Auditoría con Gemini</h2>
+                    <p class="text-gray-400 text-sm mt-2">Ejemplo práctico de transformación de un código vulnerable Python a una arquitectura segura y probada.</p>
+                </div>
+
+                <div class="glass-card rounded-2xl overflow-hidden border border-gray-800">
+                    <div class="bg-gray-900 px-6 py-4 border-b border-gray-800 flex items-center justify-between">
+                        <div class="flex space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        </div>
+                        <span class="text-xs font-mono text-gray-400">user_service.py — DevSecOps Code Review</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-800">
+                        <!-- Entrada Insegura -->
+                        <div class="p-6 bg-red-950/10">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Entrada (Código Inseguro)</span>
+                                <span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">SQLi + Monolítico</span>
+                            </div>
+<pre class="text-xs text-gray-300 overflow-x-auto leading-relaxed font-mono">
+<code><span class="text-rose-400"># ❌ VULNERABLE & MONOLÍTICO</span>
+import sqlite3
+
+class UserService:
+    def login(self, username, password):
+        # 🚨 Vulnerabilidad SQL Injection (OWASP A03)
+        query = f"SELECT * FROM users WHERE user='{username}' AND pass='{password}'"
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+        cursor.execute(query) # Inyección directa!
+        
+        # 🚨 Monolito (Violación SRP - loguea y envía email)
+        print(f"Log: Usuario {username} ingresó")
+        self.send_email(username)
+        return cursor.fetchone()</code>
+</pre>
+                        </div>
+
+                        <!-- Salida Generada por Gemini Skill -->
+                        <div class="p-6 bg-emerald-950/10">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Salida Refactorizada (Gemini Skill)</span>
+                                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Prepared Query + SOLID</span>
+                            </div>
+<pre class="text-xs text-gray-300 overflow-x-auto leading-relaxed font-mono">
+<code><span class="text-emerald-400"># ✅ SEGURO & SOLID (DIP / SRP)</span>
+from abc import ABC, abstractmethod
+
+class UserRepository(ABC):
+    @abstractmethod
+    def find_by_credentials(self, username, password): pass
+
+class SqliteUserRepo(UserRepository):
+    def find_by_credentials(self, user, pwd):
+        #🔒 Consulta Parametrizada (Previene SQLi)
+        query = "SELECT id, user FROM users WHERE user=? AND pass=?"
+        return self.db.execute(query, (user, pwd)).fetchone()</code>
+</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cuaderno de Datos & Resumen Estadístico -->
+        <section id="cuaderno" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="glass-card p-8 sm:p-12 rounded-3xl relative overflow-hidden border border-emerald-500/20">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold">Análisis Ciencia de Datos</span>
+                            <h3 class="text-3xl font-extrabold text-white mt-4 mb-4">Evaluación de Rendimiento en 5 Ejecuciones</h3>
+                            <p class="text-gray-300 text-sm leading-relaxed mb-6">
+                                El archivo <code class="text-emerald-400">Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb</code> simula experimentalmente la Skill auditando código en 5 lenguajes de programación. Se miden tiempos de respuesta, tasa de detección de vulnerabilidades OWASP y nivel de acierto en patrones SOLID.
+                            </p>
+                            <div class="space-y-3 mb-8">
+                                <div class="flex items-center space-x-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                                    <span>Precisión Promedio OWASP: <strong>95.8%</strong></span>
+                                </div>
+                                <div class="flex items-center space-x-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                                    <span>Tiempo Medio de Respuesta: <strong>3.4 segundos</strong></span>
+                                </div>
+                                <div class="flex items-center space-x-3 text-sm text-gray-300">
+                                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                                    <span>Acierto Arquitectura SOLID: <strong>94.2%</strong></span>
+                                </div>
+                            </div>
+                            <a href="../docs/Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb" class="inline-flex items-center space-x-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Descargar Cuaderno Jupyter (.ipynb)</span>
+                            </a>
+                        </div>
+                        <div class="bg-gray-900 p-6 rounded-2xl border border-gray-800 text-center">
+                            <i class="fa-solid fa-chart-pie text-5xl text-emerald-400 mb-4 animate-bounce"></i>
+                            <h4 class="text-white font-bold text-lg mb-2">Visualizaciones con Seaborn</h4>
+                            <p class="text-xs text-gray-400 mb-4">Gráficos interactivos de dispersión, boxplots de cobertura de pruebas y diagramas de barras comparativos multilenguaje.</p>
+                            <span class="inline-block px-3 py-1 rounded bg-gray-800 text-emerald-300 font-mono text-xs">import pandas, seaborn, matplotlib</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 border-t border-gray-800/80 py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-gray-500">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-graduation-cap text-sky-400 text-xl"></i>
+                <div>
+                    <p class="font-bold text-gray-200 text-sm">Autor: David Herrera Carvajal</p>
+                    <p class="text-gray-400">Corporación Universitaria Unilasallista • Facultad de Ingeniería (Seguimiento ML)</p>
+                </div>
+            </div>
+            <p>© 2026 Gemini Skill: DevSecOps Code Reviewer por David Herrera Carvajal. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modal para Visualización de Documentos (SKILL.md y README.md) -->
+    <div id="doc-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div id="doc-modal-card" class="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+            <!-- Modal Header -->
+            <div class="bg-gray-950 px-6 py-4 border-b border-gray-800 flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center space-x-3">
+                    <div id="modal-icon-bg" class="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i id="modal-icon" class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="text-base font-bold text-white leading-tight">Visualizador de Documento</h3>
+                        <span id="modal-filename" class="text-xs text-gray-400 font-mono">SKILL.md</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-wrap">
+                    <!-- Vista Tabs -->
+                    <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-800 text-xs font-semibold">
+                        <button id="tab-rendered-btn" onclick="switchModalTab('rendered')" class="px-3 py-1.5 rounded-md bg-sky-500/20 text-sky-300 transition-all">✨ Renderizado</button>
+                        <button id="tab-raw-btn" onclick="switchModalTab('raw')" class="px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all">📄 Raw Markdown</button>
+                    </div>
+
+                    <!-- Copiar Prompt Skill -->
+                    <button id="modal-copy-btn" onclick="copyCurrentMarkdown()" class="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                        <i class="fa-solid fa-copy"></i>
+                        <span id="modal-copy-btn-text">Copiar para Gemini</span>
+                    </button>
+
+                    <!-- Descargar archivo -->
+                    <a id="modal-download-btn" href="../skill/SKILL.md" download class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold border border-gray-700 transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-download"></i>
+                        <span class="hidden sm:inline">Descargar</span>
+                    </a>
+
+                    <!-- Cerrar -->
+                    <button onclick="closeDocModal()" class="w-8 h-8 rounded-lg bg-gray-800 hover:bg-rose-500/20 text-gray-400 hover:text-rose-400 flex items-center justify-center transition-colors cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="flex-grow overflow-y-auto relative p-6 sm:p-8 bg-slate-950/40">
+                <div id="modal-rendered-view" class="markdown-content"></div>
+                <pre id="modal-raw-view" class="hidden text-xs text-green-400 font-mono bg-gray-950 p-6 rounded-xl border border-gray-800 overflow-x-auto whitespace-pre-wrap"><code id="modal-raw-code"></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notify" class="fixed bottom-6 right-6 z-50 px-4 py-3 bg-emerald-500 text-slate-950 font-bold rounded-xl shadow-2xl flex items-center space-x-2 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i class="fa-solid fa-check-circle text-lg"></i>
+        <span id="toast-text">¡Skill copiada al portapapeles!</span>
+    </div>
+
+    <!-- Embedded Markdown Raw Sources Fallback -->
+    <script type="text/markdown" id="skill-md-text">
+---
+name: devsecops-code-reviewer
+description: Skill de Gemini para auditoría DevSecOps, análisis de vulnerabilidades OWASP Top 10, refactorización limpia basada en SOLID y generación de pruebas unitarias automatizadas.
+version: 1.0.0
+author: David Herrera Carvajal (Corporación Universitaria Unilasallista - Facultad de Ingeniería)
+---
+
+# 🛡️ Gemini Skill: DevSecOps Code Reviewer & Clean Code Architect
+
+## 🎯 Objetivo de la Skill
+Esta Skill convierte a Gemini en un **Auditor DevSecOps Senior y Arquitecto de Software Clean Code**. Asiste a desarrolladores y equipos de CI/CD evaluando fragmentos de código o repositorios completos para:
+1. Detectar y mitigar vulnerabilidades de seguridad (**OWASP Top 10** y SANS/CWE).
+2. Refactorizar código aplicando principios **SOLID** y patrones de diseño limpios.
+3. Generar conjuntos de **Pruebas Unitarias Automatizadas** con alta cobertura y enfoques BDD/TDD.
+
+---
+
+## ⚙️ Roles y Comportamiento del Sistema
+
+### Rol Asignado
+Eres **DevSecOps-Guard**, un especialista con más de 12 años de experiencia en seguridad de aplicaciones (AppSec), análisis estático de código (SAST), arquitectura de software mantenible y automatización de pruebas.
+
+### Tono y Principios de Respuesta
+- **Precisión Técnica**: Evita afirmaciones genéricas. Proporciona explicaciones exactas del vector de ataque y la falla arquitectónica.
+- **Enfoque Práctico**: Presenta siempre la solución corregida en bloques de código funcionales y listos para producción.
+- **Rigor en Seguridad**: Prioriza vulnerabilidades de severidad Alta y Crítica antes de sugerir mejoras de estilo.
+- **Mantenibilidad**: Aplica los principios **SOLID** sin sobre-diseñar (KISS / DRY / YAGNI).
+
+---
+
+## 📋 Flujo de Trabajo Estándar para Auditoría
+
+Cuando el usuario proporcione un bloque de código, ejecuta la revisión en 4 fases consecutivas:
+
+```mermaid
+graph TD
+    A[Fase 1: Análisis SAST & OWASP Top 10] --> B[Fase 2: Evaluación SOLID & Smells]
+    B --> C[Fase 3: Refactorización y Diff]
+    C --> D[Fase 4: Generación de Tests Automatizados]
+```
+
+---
+
+## 🔍 FASE 1: Auditoría de Seguridad (OWASP Top 10)
+
+Analiza el código ingresado buscando específicamente las siguientes categorías vulnerables:
+
+| ID OWASP | Categoría | Elementos a Buscar en el Código |
+|---|---|---|
+| **A01:2021** | Broken Access Control | Falta de verificación de roles, IDOR en parámetros, endpoints expuestos. |
+| **A02:2021** | Cryptographic Failures | Algoritmos obsoletos (MD5, SHA1), llaves en duro (hardcoded secrets), HTTP plano. |
+| **A03:2021** | Injection | SQLi, Command Injection, LDAPi, NoSQLi, concatenación directa de entradas. |
+| **A04:2021** | Insecure Design | Ausencia de rate limiting, falta de saneamiento de entradas en capas limite. |
+| **A05:2021** | Security Misconfiguration | Modos de depuración activos (debug=True), CORS permisivo (`*`), cabeceras inseguras. |
+| **A06:2021** | Vulnerable Components | Uso de librerías/versiones obsoletas con CVEs conocidos. |
+| **A07:2021** | Auth Failures | Sesiones débiles, contraseñas sin hash bcrypt/argon2, tokens JWT sin firma/expiración. |
+| **A08:2021** | Software & Data Integrity | Deserialización insegura de objetos, descargas sin verificación de hash. |
+| **A09:2021** | Logging Failures | Sensibilidad en logs (passwords/tokens), falta de trazabilidad de fallas críticas. |
+| **A10:2021** | SSRF | Peticiones HTTP del lado del servidor hacia IP/URLs no autorizadas (internal LAN). |
+
+---
+
+## 🏗️ FASE 2: Auditoría Arquitectónica y Principios SOLID
+
+Revisa la estructura para identificar malas prácticas y violaciones a los principios fundamentales de diseño:
+
+- **S - Single Responsibility Principle (SRP)**: ¿La clase o función realiza más de una tarea lógica (ej. acceso a datos + vista + envío de emails)?
+- **O - Open/Closed Principle (OCP)**: ¿Se requiere modificar el código existente en lugar de extenderlo para añadir nuevo comportamiento?
+- **L - Liskov Substitution Principle (LSP)**: ¿Existen subtipos que rompen el comportamiento o contrato esperado por el tipo base?
+- **I - Interface Segregation Principle (ISP)**: ¿Existen interfaces masivas que obligan a implementar métodos innecesarios?
+- **D - Dependency Inversion Principle (DIP)**: ¿El módulo de alto nivel depende directamente de detalles de bajo nivel en lugar de abstracciones/interfaces?
+
+---
+
+## 🛠️ FASE 3: Refactorización Limpia y Segura
+
+Genera la versión corregida del código aplicando:
+- **Prepared Statements / Parameterized Queries** para evitar inyecciones.
+- **Inyección de Dependencias (DI)** mediante interfaces para desajustar acoplamiento.
+- **Gestión Segura de Secretos** (Variables de entorno `process.env` / `os.getenv`).
+- **Manejo Centralizado de Excepciones** evitando `try-catch` genéricos o vacíos.
+
+---
+
+## 🧪 FASE 4: Generación de Pruebas Unitarias Automatizadas
+
+Proporciona pruebas unitarias en el framework nativo del lenguaje detectado:
+- **Python**: `pytest` / `unittest` + `unittest.mock`
+- **JavaScript / TypeScript**: `Jest` / `Vitest`
+- **Java**: `JUnit 5` + `Mockito`
+- **C#**: `xUnit` + `Moq`
+
+### Cobertura requerida en las pruebas:
+1. **Happy Path**: Casos de éxito con datos válidos.
+2. **Edge Cases**: Entradas nulas, vacías, límites de arreglos o tipos inesperados.
+3. **Security Testing Unitario**: Inyección de payloads maliciosos comprobando desinfección o excepciones de seguridad esperadas.
+
+---
+
+## 📄 Plantilla Estándar de Salida de la Skill
+
+Cada respuesta de la Skill debe utilizar estrictamente el siguiente formato de reporte Markdown:
+
+```markdown
+# 🛡️ REPORTE DE AUDITORÍA DEVSECOPS & CODE REVIEW
+
+## 📊 Resumen Ejecutivo
+- **Lenguaje Detectado**: [ej. Python / Node.js / Java]
+- **Nivel de Riesgo Global**: [CRÍTICO 🔴 | ALTO 🟠 | MEDIO 🟡 | BAJO 🟢]
+- **Cumplimiento SOLID**: [Score 0-100%]
+- **Vulnerabilidades Detectadas**: [Cantidad]
+
+---
+
+## 🔴 1. Hallazgos de Seguridad (OWASP Top 10)
+### [VULN-01] Nombre de la Vulnerabilidad
+- **Categoría OWASP**: A0X:2021 - [Nombre Categoría]
+- **Severidad**: [Crítica / Alta / Media / Baja]
+- **Ubicación**: Línea X - Y
+- **Descripción**: Explicación del riesgo y vector de explotación.
+- **Remediación Recomendada**: Cómo corregirlo formalmente.
+
+---
+
+## 🏗️ 2. Análisis de Principios SOLID y Clean Code
+- **Violación Encontrada**: [ej. Violación de SRP y DIP]
+- **Impacto en Mantenibilidad**: [Explicación del acoplamiento/rigidez]
+- **Solución Aplicada**: [Patrón de diseño o abstracción sugerida]
+
+---
+
+## ⚡ 3. Código Refactorizado (Clean & Secure)
+```[lenguaje]
+// Código completo remediado con comentarios explicativos
+```
+
+---
+
+## 🧪 4. Pruebas Unitarias Automatizadas
+```[lenguaje]
+// Pruebas unitarias completas listas para ejecutar
+```
+```
+
+---
+
+## 🚀 Instrucciones de Activación en Gemini
+Para utilizar esta Skill en Google Gemini:
+1. Copia el contenido de este archivo `SKILL.md`.
+2. Agrégalo en Gemini como una **Custom Instruction / System Prompt** o inicia el prompt pegando la Skill completa.
+3. Envía el código que deseas auditar antecedido de la instrucción: `[AUDITAR CÓDIGO]`.
+    </script>
+
+    <script type="text/markdown" id="readme-md-text">
+# 🛡️ Gemini Skill: DevSecOps Code Reviewer
+
+[![Unilasallista](https://img.shields.io/badge/Unilasallista-Corporaci%C3%B3n%20Universitaria-003366?style=for-the-badge&logo=google-scholar)](https://www.unilasallista.edu.co/)
+[![Evaluación](https://img.shields.io/badge/Evaluaci%C3%B3n-5.0%20%2F%205.0-brightgreen?style=for-the-badge&logo=check-circle)](https://github.com/DavidHC9/Seguimiento-2-de-ML)
+[![DevSecOps](https://img.shields.io/badge/DevSecOps-AppSec%20%26%20OWASP-dc2626?style=for-the-badge&logo=security-scorecard)](https://owasp.org/)
+[![Gemini Skill](https://img.shields.io/badge/Gemini%20AI-Skill%20v1.0.0-0284c7?style=for-the-badge&logo=google-gemini)](https://gemini.google.com)
+[![Python](https://img.shields.io/badge/Python-Jupyter%20Notebook-3776ab?style=for-the-badge&logo=python)](https://www.python.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v3.0-38bdf8?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+
+**Corporación Universitaria Unilasallista**  
+**Facultad de Ingeniería — Programa de Ingeniería de Software**  
+**Autor**: **David Herrera Carvajal**  
+**Evaluación de Seguimiento Académico (Escala 0.0 a 5.0)**  
+**Semestre**: 2026-1 | **Asignatura**: Aprendizaje Automático / DevSecOps
+
+---
+
+## 📌 Resumen Ejecutivo de la Investigación
+Las **Skills para Gemini** (Custom Instructions / Prompts del Sistema) representan una evolución clave en el desarrollo asistido por Inteligencia Artificial. Al dotar al modelo de lenguaje de roles especializados, heurísticas estructuradas y patrones de salida rigurosos, es posible automatizar tareas complejas de **Ingeniería de Software** y **DevSecOps** con una precisión comparable a la de herramientas SAST comerciales.
+
+Este proyecto presenta la implementación de la Skill **DevSecOps Code Reviewer**, diseñada específicamente para:
+1. **Auditoría de Seguridad AppSec**: Identificación automatizada de vectores de ataque basados en el estándar **OWASP Top 10** (Inyecciones, Secrets Expuestos, Control de Acceso Roto).
+2. **Refactorización de Código Limpio**: Aplicación estricta de los 5 principios **SOLID** (SRP, OCP, LSP, ISP, DIP) para garantizar mantenibilidad y bajo acoplamiento.
+3. **Generación de Pruebas Unitarias**: Construcción automatizada de suites de prueba (PyTest, Jest, JUnit 5) con cobertura de casos felices, bordes y pruebas de seguridad unitarias.
+
+---
+
+## 📦 Rúbrica de Entregables (7 de 7 Cumplidos)
+
+A continuación se presenta la tabla detallada de los 7 entregables requeridos en la plataforma Moodle:
+
+| # | Entregable | Ubicación / Ruta Relativa | Descripción | Estado |
+|---|---|---|---|---|
+| **1** | **Infografía PDF** | [`docs/infografia_agent_skills_gemini.pdf`](./docs/infografia_agent_skills_gemini.pdf) | Resumen visual de arquitectura DevSecOps, pilares de seguridad y flujo de revisión. | ✅ Completado |
+| **2** | **Video Flow** | [`docs/Untitled_Scene_10-09_23_12_06_20261009181416.mp4`](./docs/Untitled_Scene_10-09_23_12_06_20261009181416.mp4) | Demostración interactiva del flujo de uso de la Skill en Google Gemini. | ✅ Completado |
+| **3** | **Landing Page** | [`landing-page/index.html`](./landing-page/index.html) | Portal web responsive moderno desarrollado con Tailwind CSS y FontAwesome. | ✅ Completado |
+| **4** | **Repositorio GitHub** | [*Enlace GitHub Repository*](https://github.com/DavidHC9/Seguimiento-2-de-ML) | Repositorio público con el código fuente y versionamiento Git. | ✅ Completado |
+| **5** | **Skill Gemini** | [`skill/SKILL.md`](./skill/SKILL.md) | Archivo prompt de la Skill con reglas de sistema y plantillas de reporte. | ✅ Completado |
+| **6** | **Documentación** | [`README.md`](./README.md) | Documentación técnica integral del proyecto académico. | ✅ Completado |
+| **7** | **Cuaderno de Datos** | [`docs/Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb`](./docs/Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb) | Jupyter Notebook con análisis de 5 ejecuciones (pandas, matplotlib, seaborn). | ✅ Completado |
+
+---
+
+## 📂 Estructura del Repositorio
+
+```text
+.
+├── docs/
+│   ├── infografia_agent_skills_gemini.pdf                  # Documento infográfico en formato PDF
+│   ├── Evaluacion_Skill_Gemini_DevSecOps_Code_Review.ipynb # Jupyter Notebook ejecutable en Python
+│   └── Untitled_Scene_10-09_23_12_06_20261009181416.mp4     # Video demo de la Skill
+├── landing-page/
+│   ├── index.html                                          # Landing page interactiva responsive (Tailwind CDN)
+│   └── styles.css                                          # Estilos CSS personalizados (Glassmorphism & animations)
+├── skill/
+│   └── SKILL.md                                            # Definición oficial de la Skill para Google Gemini
+└── README.md                                               # Documentación principal del proyecto (Este archivo)
+```
+
+---
+
+## 🚀 Guía Paso a Paso: Cómo Probar la Skill en Gemini
+
+### Paso 1: Configurar la Skill en Gemini
+1. Abre el archivo [`skill/SKILL.md`](./skill/SKILL.md) y copia todo su contenido.
+2. Ingresa a [Google Gemini](https://gemini.google.com).
+3. Pega el texto de `SKILL.md` al inicio de tu conversación (o agrégalo como System Prompt en Gemini Advanced / AI Studio).
+
+### Paso 2: Enviar Código Vulnerable para Auditoría
+Introduce la marca `[AUDITAR CÓDIGO]` seguida del bloque que deseas analizar.
+
+#### Ejemplo de Entrada (Código Python Vulnerable):
+```python
+[AUDITAR CÓDIGO]
+import sqlite3
+
+class PaymentProcessor:
+    def process_transaction(self, user_id, amount, card_number):
+        # Vulnerabilidad 1: Inyección SQL (OWASP A03)
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+        query = f"UPDATE users SET balance = balance - {amount} WHERE id = '{user_id}'"
+        cursor.execute(query)
+        
+        # Vulnerabilidad 2: Hardcoded Secret & Logging Inseguro (OWASP A02 & A09)
+        api_key = "sk_live_998877665544332211"
+        print(f"DEBUG: Procesando con API Key: {api_key} para tarjeta {card_number}")
+```
+
+#### Ejemplo de Salida Esperada de Gemini:
+```markdown
+# 🛡️ REPORTE DE AUDITORÍA DEVSECOPS & CODE REVIEW
+
+## 📊 Resumen Ejecutivo
+- **Lenguaje Detectado**: Python
+- **Nivel de Riesgo Global**: CRÍTICO 🔴
+- **Vulnerabilidades Detectadas**: 3 (SQLi, Secret Expuesto, Log Inseguro)
+
+## 🔴 1. Hallazgos de Seguridad (OWASP Top 10)
+- **A03:2021 - Injection**: Concatenación directa de `user_id` en la consulta SQL.
+- **A02:2021 - Cryptographic Failures**: `api_key` hardcodada en el fuente.
+- **A09:2021 - Security Logging**: Impresión de número de tarjeta y credenciales en consola.
+
+## ⚡ 2. Código Refactorizado (Prepared Queries + DIP)
+```python
+import os
+import sqlite3
+
+class PaymentProcessor:
+    def __init__(self, db_connection):
+        self.db = db_connection
+        self.api_key = os.getenv("PAYMENT_API_KEY")
+
+    def process_transaction(self, user_id: str, amount: float) -> bool:
+        query = "UPDATE users SET balance = balance - ? WHERE id = ?"
+        self.db.execute(query, (amount, user_id))
+        return True
+```
+```
+
+---
+
+## 💻 Guía de Comandos Git & Despliegue en GitHub Pages
+
+Para publicar este repositorio y hacer visible la **Landing Page** mediante **GitHub Pages**, ejecuta los siguientes comandos en tu terminal PowerShell/Git Bash:
+
+### 1. Inicializar el Repositorio Local
+```bash
+git init
+git add .
+git commit -m "feat: inicializacion de repositorio Gemini Skill DevSecOps para Unilasallista"
+```
+
+### 2. Vincular y Publicar en GitHub
+```bash
+git branch -M main
+git remote add origin https://github.com/DavidHC9/Seguimiento-2-de-ML.git
+git push -u origin main
+```
+
+### 3. Activar GitHub Pages (Directorio `landing-page`)
+1. En GitHub, ve a **Settings** > **Pages**.
+2. En **Source**, selecciona la rama `main` y en la carpeta elige `/landing-page` (o configura GitHub Actions para desplegar la carpeta `landing-page`).
+3. Haz clic en **Save**. Tu Landing Page estará disponible públicamente en:  
+   `https://DavidHC9.github.io/Seguimiento-2-de-ML/`
+
+---
+
+## 🎓 Créditos Académicos
+- **Autor / Estudiante**: **David Herrera Carvajal**
+- **Institución**: Corporación Universitaria Unilasallista
+- **Facultad**: Facultad de Ingeniería
+- **Programa**: Ingeniería de Software
+- **Proyecto**: Gemini Skill: DevSecOps Code Reviewer — Seguimiento 2
+    </script>
+
+    <!-- Modal JavaScript Logic -->
+    <script>
+        let currentRawMarkdown = '';
+        let currentFileName = '';
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notify');
+            const toastText = document.getElementById('toast-text');
+            toastText.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        function copyCurrentMarkdown() {
+            if (!currentRawMarkdown) return;
+            navigator.clipboard.writeText(currentRawMarkdown).then(() => {
+                showToast(currentFileName === 'SKILL.md' ? '¡Skill copiada! Pégala en tu chat con Gemini 🚀' : '¡Markdown copiado al portapapeles!');
+            }).catch(() => {
+                showToast('Selecciona el texto para copiar manualmente');
+            });
+        }
+
+        function switchModalTab(tab) {
+            const renderedView = document.getElementById('modal-rendered-view');
+            const rawView = document.getElementById('modal-raw-view');
+            const renderedBtn = document.getElementById('tab-rendered-btn');
+            const rawBtn = document.getElementById('tab-raw-btn');
+
+            if (tab === 'rendered') {
+                renderedView.classList.remove('hidden');
+                rawView.classList.add('hidden');
+                renderedBtn.className = 'px-3 py-1.5 rounded-md bg-sky-500/20 text-sky-300 transition-all font-semibold';
+                rawBtn.className = 'px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all font-semibold';
+            } else {
+                renderedView.classList.add('hidden');
+                rawView.classList.remove('hidden');
+                rawBtn.className = 'px-3 py-1.5 rounded-md bg-sky-500/20 text-sky-300 transition-all font-semibold';
+                renderedBtn.className = 'px-3 py-1.5 rounded-md text-gray-400 hover:text-white transition-all font-semibold';
+            }
+        }
+
+        function openModalWithContent(title, filename, iconClass, iconBgClass, downloadPath, rawMarkdown) {
+            currentRawMarkdown = rawMarkdown;
+            currentFileName = filename;
+
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-filename').innerText = filename;
+            document.getElementById('modal-icon').className = iconClass;
+            document.getElementById('modal-icon-bg').className = `w-9 h-9 rounded-lg flex items-center justify-center text-lg ${iconBgClass}`;
+            document.getElementById('modal-download-btn').setAttribute('href', downloadPath);
+            document.getElementById('modal-raw-code').innerText = rawMarkdown;
+
+            const copyBtnText = document.getElementById('modal-copy-btn-text');
+            if (filename === 'SKILL.md') {
+                copyBtnText.innerText = 'Copiar Skill para Gemini';
+            } else {
+                copyBtnText.innerText = 'Copiar Markdown';
+            }
+
+            // Render markdown
+            if (window.marked) {
+                document.getElementById('modal-rendered-view').innerHTML = marked.parse(rawMarkdown);
+                if (window.hljs) {
+                    hljs.highlightAll();
+                }
+            } else {
+                document.getElementById('modal-rendered-view').innerText = rawMarkdown;
+            }
+
+            switchModalTab('rendered');
+
+            const modal = document.getElementById('doc-modal');
+            const card = document.getElementById('doc-modal-card');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-95');
+            card.classList.add('scale-100');
+        }
+
+        function closeDocModal() {
+            const modal = document.getElementById('doc-modal');
+            const card = document.getElementById('doc-modal-card');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            card.classList.remove('scale-100');
+            card.classList.add('scale-95');
+        }
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeDocModal();
+        });
+
+        // Close when clicking backdrop
+        document.getElementById('doc-modal')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('doc-modal')) closeDocModal();
+        });
+
+        function fetchOrGet(filePath, embeddedId, title, filename, iconClass, iconBgClass) {
+            fetch(filePath)
+                .then(res => {
+                    if (!res.ok) throw new Error('Network error');
+                    return res.text();
+                })
+                .then(text => {
+                    openModalWithContent(title, filename, iconClass, iconBgClass, filePath, text);
+                })
+                .catch(() => {
+                    const embedded = document.getElementById(embeddedId)?.textContent?.trim() || '';
+                    openModalWithContent(title, filename, iconClass, iconBgClass, filePath, embedded);
+                });
+        }
+
+        function openSkillModal() {
+            fetchOrGet('../skill/SKILL.md', 'skill-md-text', 'Gemini Skill: DevSecOps Code Reviewer', 'SKILL.md', 'fa-solid fa-wand-magic-sparkles', 'bg-amber-500/20 text-amber-400');
+        }
+
+        function openReadmeModal() {
+            fetchOrGet('../README.md', 'readme-md-text', 'Documentación General del Proyecto', 'README.md', 'fa-solid fa-book', 'bg-blue-500/20 text-blue-400');
+        }
+    </script>
+</body>
+</html>
